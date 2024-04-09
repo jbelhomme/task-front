@@ -31,17 +31,19 @@ export class FormTaskComponent {
       label: this.formTask.get('labelField')!.value ?? '',
       complete: this.formTask.get('completeField')!.value ?? false,
     };
-    this.taskService.createTask(taskDto).subscribe({
-      next: resolve => {
-        console.log('POST request successful:', resolve);
-      },
-      error: error => {
-        console.error('Error occurred:', error);
-      },
-      complete: () => {
-        this.taskService.setRefreshListTask(true);
-      }
-    });
+    if (taskDto.label != "") {
+      this.taskService.createTask(taskDto).subscribe({
+        next: resolve => {
+          console.log('POST request successful:', resolve);
+        },
+        error: error => {
+          console.error('Error occurred:', error);
+        },
+        complete: () => {
+          this.taskService.setRefreshListTask(true);
+        }
+      });
+    }
     this.formTask.reset();
   }
 }

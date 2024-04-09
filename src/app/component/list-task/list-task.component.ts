@@ -32,7 +32,7 @@ export class ListTaskComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.tasksSource = new MatTableDataSource<TaskDto>();
+
     this.getListTasks();
     this.taskService.getRefreshListTask().subscribe(refresh => {
       if (refresh) {
@@ -78,7 +78,7 @@ export class ListTaskComponent implements OnInit, AfterViewInit {
    */
   public async getListTasks() {
     this.taskService.getAllTasks(this.page, this.pageSize, this.completeCriteria).subscribe((data: ListTasks<TaskDto>) => {
-      this.tasksSource.data = data.content;
+      this.tasksSource = new MatTableDataSource<TaskDto>(data.content);
       this.length = data.totalElements;
       console.log(this.length, this.page, this.pageSize);
     });
