@@ -1,0 +1,19 @@
+<mat-card id="card-form-task">
+  <mat-card-header>
+    <h1>Créer une tâche : </h1>
+  </mat-card-header>
+  <mat-card-content>
+    <form id="task-form" [formGroup]="formTask" (ngSubmit)="onSubmit()">
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Nom de la tâche</mat-label>
+          <input matInput formControlName="labelField">
+        </mat-form-field>
+      </div>
+      <div id="task-form-checkbox">
+        <mat-checkbox formControlName="completeField">À Faire</mat-checkbox>
+      </div>
+      <button mat-raised-button type="submit" color="primary">Enregistrer</button>
+    </form>
+  </mat-card-content>
+</mat-card>

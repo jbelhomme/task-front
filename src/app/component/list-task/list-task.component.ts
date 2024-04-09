@@ -19,21 +19,26 @@ import {MatCardModule} from "@angular/material/card";
 })
 export class ListTaskComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  tasksSource!: MatTableDataSource<TaskDto, MatPaginator>;
+  tasksSource!: MatTableDataSource<TaskDto>;
 
   protected page = 0;
-  protected pageIndex = 0;
-  protected pageSize = 5;
+  protected pageSize = 10;
   protected displayedColumns: string[] = ['id', 'label', 'complete'];
   protected length?: number;
+
+  protected completeCriteria: boolean = false;
 
   constructor(private taskService: TaskService) {
   }
 
   ngOnInit() {
-    // this.taskService.getTaskById(1).subscribe((data) => { this.task = data; });
     this.tasksSource = new MatTableDataSource<TaskDto>();
     this.getListTasks();
+    this.taskService.getRefreshListTask().subscribe(refresh => {
+      if (refresh) {
+        this.getListTasks();
+      }
+    })
   }
 
   public ngAfterViewInit(): void {
@@ -41,17 +46,18 @@ export class ListTaskComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Get tasks after change params of table
-   * @param e page event
+   * Refresh list of tasks after change page or size page
+   * @param event page event
    */
-  protected async handlePageEvent(e: PageEvent) {
-    this.pageSize = e.pageSize;
-    this.page = e.pageIndex;
+  protected async handlePageEvent(event: PageEvent) {
+    this.pageSize = event.pageSize;
+    this.page = event.pageIndex;
     await this.getListTasks();
   }
 
   /**
-   * Get tasks after change params of table
+   * Update task status
+   * @param row task dto
    */
   protected async updateStatusTask(row: TaskDto) {
     this.taskService.updateTask(row).subscribe({
@@ -70,12 +76,20 @@ export class ListTaskComponent implements OnInit, AfterViewInit {
   /**
    * Get the tasks with current filters and pagination
    */
-  private async getListTasks() {
-    this.taskService.getAllTasks(this.page, this.pageSize, false).subscribe((data: ListTasks<TaskDto>) => {
+  public async getListTasks() {
+    this.taskService.getAllTasks(this.page, this.pageSize, this.completeCriteria).subscribe((data: ListTasks<TaskDto>) => {
       this.tasksSource.data = data.content;
-      if (data.totalElements != null && data.totalPages != null) {
-        this.length = data.totalElements;
-      }
+      this.length = data.totalElements;
+      console.log(this.length, this.page, this.pageSize);
     });
+  }
+
+  /**
+   * Change the current filter on the status with the opposite
+   */
+  protected async filterListOnComplete() {
+    this.completeCriteria = !this.completeCriteria;
+    this.page = 0;
+    await this.getListTasks();
   }
 }

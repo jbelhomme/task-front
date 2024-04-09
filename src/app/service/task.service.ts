@@ -1,14 +1,24 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+  private refreshListTask: BehaviorSubject<boolean>;
 
   constructor(protected httpClient: HttpClient) {
+    this.refreshListTask = new BehaviorSubject(false);
+  }
+
+  getRefreshListTask(): Observable<boolean> {
+    return this.refreshListTask;
+  }
+
+  setRefreshListTask(refresh: boolean) {
+    this.refreshListTask.next(refresh);
   }
 
   private getUrl(uri: string): string {
@@ -44,10 +54,19 @@ export class TaskService {
     return this.httpClient.put(this.getUrl(`/${row.id}`), body);
   }
 
+  /**
+   * create Task
+   *@param newTask dto task with form value
+   */
+  createTask(newTask: TaskDto): Observable<any> {
+    const body = {label: newTask.label, complete: newTask.complete};
+    return this.httpClient.post(this.getUrl(""), body);
+  }
+
 }
 
 export class TaskDto {
-  id!: number;
+  id?: number;
   label!: string;
   complete!: boolean;
 }
@@ -56,5 +75,4 @@ export class ListTasks<T> {
   content!: T[];
   totalElements?: number;
   pageIndex?: number;
-  totalPages?: number;
 }

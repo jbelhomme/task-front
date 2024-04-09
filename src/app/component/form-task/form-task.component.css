@@ -1,0 +1,17 @@
+#task-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+#task-form-checkbox {
+  margin-bottom: 15px;
+}
+
+#card-form-task {
+  width: 400px;
+}
